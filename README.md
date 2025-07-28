@@ -7,31 +7,36 @@
 ## Features 
 
 **Upload legal PDF** documents 
+
 **Text extraction** using PyMuPDF
-**Summarization** using frequency-based
+
+**Summarization** using frequency-based 
+
 **Streamlit UI** for interactive use
+
 **Export summary** to PDF 
+
 Modular code structure
 
 ---
 
 ## Project Structure
 
-Textsummarizer/
-│
-├── app.py # Streamlit app
-├── requirements.txt # Project dependencies
-├── README.md # Project documentation
-│
-├── data/
-│ ├── The Indian Contract Act, 1872.pdf # Sample legal PDF
-│ └── notice.pdf # Exported summary
-│
-└── src/
-├── init.py
-├── pdf_reader.py # PDF extraction logic
-├── summarizer.py # Summarization logic
-└── highlighter.py # Summary-to-PDF utility
+#### Textsummarizer/
+#### │
+#### ├── app.py # Streamlit app
+#### ├── requirements.txt # Project dependencies
+#### ├── README.md # Project documentation
+#### │
+#### ├── data/
+#### │ ├── The Indian Contract Act, 1872.pdf # Sample legal PDF
+#### │ └── notice.pdf # Exported summary
+#### │
+#### └── src/
+#### ├── init.py
+#### ├── pdf_reader.py # PDF extraction logic
+#### ├── summarizer.py # Summarization logic
+#### └── highlighter.py # Summary-to-PDF utility
 
 --- 
 
@@ -56,6 +61,7 @@ NLTK
 ReportLab 
 
 # Future Improvements 
+
 * Add BERT or LLM-based summarization 
 * Include keyword/entity highlighting 
 * Integrate HuggingFace Transformers 
