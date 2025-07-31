@@ -1,65 +1,45 @@
+import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
+from nltk.probability import FreqDist
+from nltk.corpus import stopwords 
+import string
 
-def summarize_text(text, num_sentences=5):
-    stop_words = set(stopwords.words("english"))
+nltk.download("punkt")
+nltk.download("stopwords")
+
+def summarize_text(text, num_sentences=7):
+    sentences = sent_tokenize(text)
     words = word_tokenize(text.lower())
 
-    filtered_words = [word for word in words if word.isalnum() and word not in stop_words]
+    # Remove stopwords and punctuation 
+    stop_words = set(stopwords.words("english"))
+    words = [word for word in words if word not in stop_words and word not in string.punctuation]
 
-    freq = {}
-    for word in filtered_words:
-        freq[word] = freq.get(word, 0) + 1
+    # Calculate word frequencies
+    freq_dist = FreqDist(words)
 
-    sentences = sent_tokenize(text)
-
+    # Score each sentence based on word frequencies
     sentence_scores = {}
-    for sentence in sentences:
-        sentence_words = word_tokenize(sentence.lower())
-        sentence_scores[sentence] = sum(freq.get(word, 0) for word in sentence_words)
+    for sent in sentences:
+        for word in word_tokenize(sent.lower()):
+            if word in freq_dist:
+                if sent not in sentence_scores:
+                    sentence_scores[sent] = freq_dist[word]
+                else:
+                    sentence_scores[sent] += freq_dist[word]
 
-    summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-    return "\n\n".join(summary_sentences)
+    top_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
+
+    # Return as numbered list
+    pointwise_summary = "\n".join([f"{i+1}. {sent}" for i, sent in enumerate(top_sentences)])
+
+    return pointwise_summary
+           
 
 
-import nltk
-from nltk.corpus import stopwords 
-from nltk.tokenize import sent_tokenize, word_tokenize
-from string import punctuation 
-import fitz # PyMuPDF 
 
-nltk.download('punkt')
-nltk.download('stopwords')
 
-def extract_text_from_pdf(file_path):
-    text = "" 
-    with fitz.open(file_path) as pdf:
-        for page in pdf:
-            text += page.get_text() 
-    return text 
 
-def summarize_text(text, num_sentences=5):
-    sentences = sent_tokenize(text)
-    words = word_tokenize(text)
 
-    stop_words = set(stopwords.words("english") + list(punctuation))
-    word_frequencies = {}
 
-    for word in words:
-        if word not in stop_words:
-            word_frequencies[word] = word_frequencies.get(word, 0) + 1
-    
-    max_freq = max(word_frequencies.values(), default=1)
-    for word in word_frequencies:
-        word_frequencies[word] /= max_freq
 
-    sentence_scores = {} 
-    for sentence in sentences:
-        for word in word_tokenize(sentence.lower()):
-            if word in word_frequencies:
-                if word in word_frequencies:
-                    sentence_scores[sentence] = sentence_scores.get(sentence, 0) + word_frequencies[word]
-
-    summary_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-    return " ".join(summary_sentences)          
-            
